@@ -1,0 +1,37 @@
+name: apartment_holder_app
+description: Apartment Holder App for Visitor Management
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  firebase_core: ^3.14.0
+  firebase_auth: ^5.6.0
+  cloud_firestore: ^5.6.9
+  firebase_messaging: ^15.2.7
+  firebase_storage: ^12.4.7
+  qr_flutter: ^4.0.0
+  image_picker: ^1.1.2
+  intl: ^0.20.2
+  share_plus: ^11.0.0
+  flutter_local_notifications: ^19.2.1
+  provider: ^6.0.5
+  datetime_picker_formfield: ^2.0.1
+  fluttertoast: ^8.2.1 # safer version for Flutter 3.22+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  build_runner: ^2.4.6 # optional, useful if you use json_serializable
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/ # Make sure this folder exists and is not empty

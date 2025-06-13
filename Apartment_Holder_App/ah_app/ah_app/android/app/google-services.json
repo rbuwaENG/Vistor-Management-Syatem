@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "809693265377",
+    "project_id": "vms-db-cb72b",
+    "storage_bucket": "vms-db-cb72b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:809693265377:android:cb089ab44b4bdc784f26a0",
+        "android_client_info": {
+          "package_name": "com.example.ah_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-j0z9nIZwZVO9Hetty-_y1AyV6-2TqME"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
