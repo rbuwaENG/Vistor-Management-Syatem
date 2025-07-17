@@ -23,8 +23,6 @@ Built with Spring Boot and React/Flutter frontend clients. The architecture incl
 - **Notification Service**
 - **Firebase Firestore & Messaging**
 
-## 📱 User Interfaces
-
 ### 🏠 Apartment Holder App
 
 - Login and dashboard to manage visitor invitations
