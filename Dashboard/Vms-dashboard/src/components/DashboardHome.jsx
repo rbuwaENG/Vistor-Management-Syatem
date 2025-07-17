@@ -2,6 +2,8 @@
 import { useState, useEffect } from "react";
 import { collection, getCountFromServer } from "firebase/firestore";
 import { db } from "../firebase";
+import { query, where } from "firebase/firestore";
+
 
 export default function DashboardHome() {
   const [counts, setCounts] = useState({

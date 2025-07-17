@@ -18,7 +18,7 @@ class GuestListScreen extends StatelessWidget {
       stream: FirebaseFirestore.instance
           .collection('guests')
           .where('apartmentHolderId', isEqualTo: apartmentHolderId)
-          .orderBy('createdAt', descending: true)
+       //   .orderBy('createdAt', descending: true)
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {

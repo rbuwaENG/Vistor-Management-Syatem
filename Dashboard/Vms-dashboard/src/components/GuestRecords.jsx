@@ -1,6 +1,5 @@
-// src/components/GuestRecords.jsx
 import { useState, useEffect } from "react";
-import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../firebase";
 
 export default function GuestRecords() {
@@ -13,38 +12,62 @@ export default function GuestRecords() {
   });
 
   useEffect(() => {
-    const fetchGuestRecords = async () => {
+    const fetchData = async () => {
+      setLoading(true);
       try {
-        setLoading(true);
-        let q = query(collection(db, "guests"), orderBy("createdAt", "desc"));
-        
-        if (filters.date) {
-          q = query(q, where("visitDate", "==", filters.date));
-        }
-        
-        if (filters.apartmentNo) {
-          q = query(q, where("apartmentNo", "==", filters.apartmentNo));
-        }
-        
-        if (filters.status) {
-          q = query(q, where("status", "==", filters.status));
-        }
-        
-        const snapshot = await getDocs(q);
-        const guestsData = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
+        // Step 1: Fetch all guest records
+        const guestSnapshot = await getDocs(collection(db, "guests"));
+        let guestsData = guestSnapshot.docs.map(doc => {
+          const data = doc.data();
+          const entry = data.entryTime?.toDate();
+          const exit = data.exitTime?.toDate();
+          return {
+            id: doc.id,
+            ...data,
+            visitDate: entry?.toISOString().split("T")[0],
+            entryTimeFormatted: entry?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) || "",
+            exitTimeFormatted: exit?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) || ""
+          };
+        });
+
+        // Step 2: Get unique apartmentHolderIds
+        const holderIds = [...new Set(guestsData.map(g => g.apartmentHolderId))];
+
+        // Step 3: Fetch all relevant users
+        const userQuery = query(
+          collection(db, "users"),
+          where("uid", "in", holderIds.slice(0, 10)) // Firestore "in" only supports max 10 items at a time
+        );
+        const userSnapshot = await getDocs(userQuery);
+        const userMap = {};
+        userSnapshot.docs.forEach(doc => {
+          const data = doc.data();
+          userMap[data.uid] = data.apartmentNo || "N/A";
+        });
+
+        // Step 4: Map apartmentNo back to guests
+        guestsData = guestsData.map(g => ({
+          ...g,
+          apartmentNo: userMap[g.apartmentHolderId] || "Unknown"
         }));
-        
-        setGuests(guestsData);
+
+        // Step 5: Apply filters
+        const filtered = guestsData.filter(g => {
+          const matchDate = filters.date ? g.visitDate === filters.date : true;
+          const matchStatus = filters.status ? g.status === filters.status : true;
+          const matchApartment = filters.apartmentNo ? g.apartmentNo === filters.apartmentNo : true;
+          return matchDate && matchStatus && matchApartment;
+        });
+
+        setGuests(filtered);
       } catch (err) {
-        console.error("Error fetching guests:", err);
+        console.error("Error loading guest records:", err);
       } finally {
         setLoading(false);
       }
     };
-    
-    fetchGuestRecords();
+
+    fetchData();
   }, [filters]);
 
   const handleFilterChange = (e) => {
@@ -55,7 +78,7 @@ export default function GuestRecords() {
   return (
     <div>
       <h2 className="text-2xl font-bold mb-6">Guest Records</h2>
-      
+
       {/* Filters */}
       <div className="bg-white p-4 rounded-lg shadow mb-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -104,8 +127,8 @@ export default function GuestRecords() {
           </div>
         </div>
       </div>
-      
-      {/* Records Table */}
+
+      {/* Table */}
       {loading ? (
         <div className="text-center py-10">Loading guest records...</div>
       ) : guests.length === 0 ? (
@@ -115,24 +138,12 @@ export default function GuestRecords() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Guest
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Apartment
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Visit Date
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Time
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Scans
-                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Guest</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Apartment</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Visit Date</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Scans</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -142,14 +153,14 @@ export default function GuestRecords() {
                     <div className="text-sm font-medium text-gray-900">{guest.name}</div>
                     <div className="text-sm text-gray-500">{guest.nic}</div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{guest.apartmentNo}</div>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {guest.apartmentNo}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {guest.visitDate}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {guest.entryTime} - {guest.exitTime}
+                    {guest.entryTimeFormatted} - {guest.exitTimeFormatted}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
