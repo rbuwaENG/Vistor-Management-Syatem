@@ -1,32 +1,80 @@
-# Microservices With Eureka Client, Server and Spring Cloud Gateway
+# Visitor Management System (VMS)
 
-This project has three microservices which are registered with Eureka Server. Spring Cloud Gateway is used to communicate to each of the service.
+A microservices-based Visitor Management System designed for apartment complexes to streamline visitor access, improve security, and ensure traceability. The system empowers residents to invite visitors digitally, allows security personnel to verify entry in real-time, and gives administrators control over the entire system via an intuitive dashboard.
 
+## 🚀 Features
 
-# Quick Start
-Note: Run as Springbootapp using Spring Tool Suite.
+- **Resident App**: Create and manage visitor invitations with QR codes or access links.
+- **Security App**: Scan and verify QR codes for entry authorization.
+- **Admin Dashboard**: Manage users, monitor system activity, and generate reports.
+- **Microservices Architecture**: Scalable and loosely coupled services for user, visitor, security, and notifications.
+- **Real-time Communication**: Integrated with Firebase for instant alerts and messaging.
+- **Cloud Deployment**: Containerized deployment on AWS using Docker and ECS Fargate.
 
-Run discovery server. (PORT - 8761)
+## 🏗 Architecture
 
-Run all three microservices. (PORT - 8661,8662,8663)
+Built with Spring Boot and React/Flutter frontend clients. The architecture includes:
 
-Run gateway Service. (PORT - 8080)
+- **Eureka Discovery Server**
+- **Spring Cloud Gateway**
+- **Admin Service**
+- **Visitor Service**
+- **Security Service**
+- **Notification Service**
+- **Firebase Firestore & Messaging**
 
-# Final Review
-Go To Url: http://localhost:8661/service-one/get
+## 📱 User Interfaces
 
-Go To Url: http://localhost:8662/service-two/get
+### 🏠 Apartment Holder App
 
-Go To Url: http://localhost:8663/service-three/get
+- Login and dashboard to manage visitor invitations
+- Shareable QR codes or links
+- Track invite history
 
-Go To Url for gateway routing for all three services:
+### 🚧 Security App
 
-http://localhost:8080/service-one/get   
+- Real-time scanning and validation of QR codes
+- Visitor details and access logs
+- Live dashboard of visitor activity
 
-http://localhost:8080/service-two/get  
+### 🧑‍💼 Manager Dashboard
 
-http://localhost:8080/service-three/get   
+- Register and manage apartment holders and security personnel
+- View visitor stats and user activity
+- Enable/disable user access
 
-## Feedback
+## ⚙ Deployment
 
-Please report bugs, concerns, suggestions by issues.
+### 🐳 Docker + AWS ECS (Fargate)
+
+- Microservices containerized via Docker
+- Images stored on **Amazon ECR**
+- Deployed using **AWS ECS Fargate**
+- Infrastructure includes **CloudWatch**, **IAM**, **VPC**, and **Secrets Manager**
+
+### CI/CD Pipeline
+
+- Automated with GitHub Actions / AWS CodePipeline
+- Builds Docker images on push, pushes to ECR, and updates ECS tasks
+
+## 🔒 Security
+
+- Role-based access control
+- IAM-based permissions and secure credential management
+- HTTPS, security groups, and VPC networking
+
+## 📂 Source Code
+
+GitHub Repository: [https://github.com/rbuwaENG/Vistor-Management-Syatem](https://github.com/rbuwaENG/Vistor-Management-Syatem)
+
+## ❗ Challenges Faced
+
+- Designing Firestore access rules for different user roles
+- Cross-platform QR generation and validation
+- Simulating microservice communication on serverless Firebase backend
+
+## 📚 References
+
+- Visitor Management System Design and Implementation (ISL, 2022)
+- Bootstrapped Firebase Guides
+- Firebase Firestore and Cloud Messaging Docs
